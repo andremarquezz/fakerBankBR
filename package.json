@@ -4,7 +4,8 @@
   "description": "O fakerBankBR é um wrapper em Node.js para o serviço 4devs que permite gerar dados bancários falsos brasileiros. Este pacote é uma simples de obter informações de contas bancárias fictícias, incluindo número da conta, dígito verificador, agência e banco. É útil para testes de software, desenvolvimento e qualquer outro cenário em que dados bancários válidos sejam necessários sem comprometer a segurança.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx cypress open",
+    "test:headless": "npx cypress run"
   },
   "repository": {
     "type": "git",
@@ -31,5 +32,8 @@
   "homepage": "https://github.com/andremarquezz/fakerBankBR#readme",
   "dependencies": {
     "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "cypress": "^13.13.0"
   }
 }

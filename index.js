@@ -4,15 +4,14 @@ const querystring = require('querystring');
 const cheerio = require('cheerio');
 const httpcodes = require('./codes.json');
 
-exports.createFakeBankAccount = (quantity = '1', commas = 'N') => {
+exports.createFakeBankAccount = (quantity = 1) => {
   return new Promise((resolve, reject) => {
     if (quantity > 10) {
-      quantity = '10';
+      quantity = 10;
     }
 
     let body = querystring.stringify({
       acao: 'gerar_conta_bancaria',
-      pontuacao: commas,
       txt_qtde: quantity,
     });
 
@@ -30,92 +29,109 @@ exports.createFakeBankAccount = (quantity = '1', commas = 'N') => {
     };
 
     try {
-      let data = '';
+      const requests = [];
 
-      const req = https.request(options, function (res) {
-        let response = {
-          error: true,
-          code: res.statusCode,
-          explain: httpcodes[res.statusCode],
-          headers: res.headers,
-          date: new Date().toLocaleString(),
-          error_msg: null,
-          dev_msg: null,
-          data: null,
-        };
+      for (let i = 0; i < quantity; i++) {
+        requests.push(makeRequest(options, body));
+      }
 
-        res.on('data', function (chunk) {
-          data += chunk;
-        });
+      Promise.all(requests)
+        .then((responses) => {
+          let accounts = [];
 
-        req.on('error', function (err) {
-          response.error = true;
-          response.code = err.code;
-          response.error_msg = err.message;
-          reject(response);
-        });
-
-        res.on('end', function () {
-          try {
-            if (data.trim().startsWith('<')) {
-              const $ = cheerio.load(data);
-
-              let conta_corrente_completa = $('#conta_corrente').text().trim();
-              let conta_corrente = conta_corrente_completa.split('-')[0];
-              let digito_verificador = conta_corrente_completa.split('-')[1];
-
-              let extractedData = {
-                account_number: conta_corrente,
-                verification_digit: digito_verificador,
-                agency: $('#agencia').text().trim(),
-                bank: $('#banco').text().trim(),
-              };
-
-              response.error = false;
-              response.data = extractedData;
-              resolve(response.data);
-            } else {
-              let Four_Devs = JSON.parse(data);
-
-              if (response.code !== 200 || !Four_Devs) {
-                response.error = true;
-                response.dev_msg =
-                  'Talvez você tenha sido bloqueado pelo servidor. Certifique-se de que não está usando proxy ou algo similar e tente em outra máquina.';
+          responses.forEach((response) => {
+            if (!response.error && response.data) {
+              if (Array.isArray(response.data)) {
+                accounts = accounts.concat(response.data);
               } else {
-                response.error = false;
-                response.data = Four_Devs;
+                accounts.push(response.data);
               }
-              resolve(response.data);
             }
-          } catch (error) {
-            response.error = true;
-            response.error_msg =
-              'Erro ao analisar a resposta JSON: ' + error.message;
-            reject(response);
+          });
+
+          // Determine what to return based on quantity
+          if (quantity === 1) {
+            resolve(accounts.length > 0 ? accounts[0] : null);
+          } else {
+            resolve(accounts);
           }
+        })
+        .catch((error) => {
+          reject(error);
         });
-      });
-
-      req.on('error', function (err) {
-        let response = {
-          error: true,
-          code: err.code,
-          error_msg: err.message,
-          data: null,
-        };
-        reject(response);
-      });
-
-      req.write(body);
-      req.end();
     } catch (error) {
-      let response = {
-        error: true,
-        code: error.code,
-        error_msg: error.message,
-        data: null,
-      };
-      reject(response);
+      reject(error);
     }
   });
 };
+
+function makeRequest(options, body) {
+  return new Promise((resolve, reject) => {
+    let data = '';
+
+    const req = https.request(options, function (res) {
+      res.on('data', function (chunk) {
+        data += chunk;
+      });
+
+      res.on('end', function () {
+        try {
+          let response = parseResponse(res, data);
+          resolve(response);
+        } catch (error) {
+          reject(error);
+        }
+      });
+    });
+
+    req.on('error', function (err) {
+      reject(err);
+    });
+
+    req.write(body);
+    req.end();
+  });
+}
+
+function parseResponse(res, data) {
+  let response = {
+    error: true,
+    code: res.statusCode,
+    explain: httpcodes[res.statusCode],
+    headers: res.headers,
+    date: new Date().toLocaleString(),
+    error_msg: null,
+    dev_msg: null,
+    data: null,
+  };
+
+  if (data.trim().startsWith('<')) {
+    const $ = cheerio.load(data);
+
+    let full_account_number = $('#conta_corrente').text().trim();
+    let account_number = full_account_number.split('-')[0];
+    let verification_digit = full_account_number.split('-')[1];
+
+    let extractedData = {
+      account_number: account_number,
+      verification_digit: verification_digit,
+      agency: $('#agencia').text().trim(),
+      bank: $('#banco').text().trim(),
+    };
+
+    response.error = false;
+    response.data = extractedData;
+  } else {
+    let Four_Devs = JSON.parse(data);
+
+    if (res.statusCode !== 200 || !Four_Devs) {
+      response.dev_msg =
+        'You may have been blocked by the server. Make sure you are not using a proxy or something similar and try on another machine.';
+    } else {
+      response.error = false;
+      response.data = Four_Devs;
+    }
+  }
+
+  return response;
+}
