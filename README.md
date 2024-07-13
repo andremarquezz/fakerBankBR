@@ -21,14 +21,16 @@ npm install --save-dev fakerbankbr
 import { createFakeBankAccount } from 'fakerbankbr';
 
 // Gerar uma única conta bancária
-createFakeBankAccount().then((conta) => {
-  //utilização
-});
+let conta;
+(async () => {
+  conta = await createFakeBankAccount();
+})();
 
 // Gerar múltiplas contas bancárias (de 1 a 10)
-createFakeBankAccount(5).then((contas) => {
-  //utilização
-});
+let contas;
+(async () => {
+  contas = await createFakeBankAccount(5);
+})();
 ```
 
 ### Exemplo de Resposta
