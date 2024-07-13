@@ -21,15 +21,17 @@ npm install --save-dev fakerbankbr
 const { createFakeBankAccount } = require('fakerbankbr');
 
 // Gerar uma única conta bancária
-let conta;
+
 (async () => {
-  conta = await createFakeBankAccount();
+  const conta = await createFakeBankAccount();
+  // Uso
 })();
 
 // Gerar múltiplas contas bancárias (de 1 a 10)
-let contas;
+
 (async () => {
-  contas = await createFakeBankAccount(5);
+  const contas = await createFakeBankAccount(5);
+  // Uso
 })();
 ```
 
