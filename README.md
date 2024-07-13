@@ -18,7 +18,7 @@ npm install --save-dev fakerbankbr
 ## 🪄Uso
 
 ```javascript
-import { createFakeBankAccount } from 'fakerbankbr';
+const { createFakeBankAccount } = require('fakerbankbr');
 
 // Gerar uma única conta bancária
 let conta;

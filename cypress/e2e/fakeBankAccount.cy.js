@@ -1,6 +1,4 @@
-// cypress/integration/fakeBankAccount.spec.js
-
-import { createFakeBankAccount } from '../../index.mjs';
+const { createFakeBankAccount } = require('../../index');
 
 describe('createFakeBankAccount', () => {
   it('should create a single fake bank account', () => {

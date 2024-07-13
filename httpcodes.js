@@ -1,4 +1,4 @@
-export default {
+const httpcodes = {
   0: {
     code: 'Not Error',
     why: 'Default message to default response from code.',
@@ -260,3 +260,5 @@ export default {
     why: 'This code means that the user needs to authenticate himself to have access to some network.',
   },
 };
+
+module.exports = httpcodes;

@@ -1,10 +1,10 @@
 'use strict';
-import cheerio from 'cheerio';
-import https from 'https';
-import querystring from 'querystring';
-import httpcodes from './httpcodes.js';
+const cheerio = require('cheerio');
+const httpcodes = require('./httpcodes'); // Assumindo que httpcodes.js está no mesmo diretório
+const https = require('https');
+const querystring = require('querystring');
 
-export const createFakeBankAccount = (quantity = 1) => {
+const createFakeBankAccount = (quantity = 1) => {
   return new Promise((resolve, reject) => {
     if (quantity > 10) {
       quantity = 10;
@@ -135,3 +135,7 @@ function parseResponse(res, data) {
 
   return response;
 }
+
+module.exports = {
+  createFakeBankAccount: createFakeBankAccount,
+};
