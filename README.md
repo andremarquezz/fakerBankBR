@@ -18,7 +18,7 @@ npm install --save-dev fakerbankbr
 ## 🪄Uso
 
 ```javascript
-const { createFakeBankAccount } = require('fakerbankbr');
+import { createFakeBankAccount } from 'fakerbankbr';
 
 // Gerar uma única conta bancária
 createFakeBankAccount().then((conta) => {
@@ -37,9 +37,9 @@ createFakeBankAccount(5).then((contas) => {
 
 ```json
 {
-  "account_number": "123456",
-  "verification_digit": "7",
-  "agency": "1234",
+  "account_number": "252258",
+  "verification_digit": "6",
+  "agency": "4282",
   "bank": "Banco do Brasil"
 }
 ```
@@ -49,22 +49,16 @@ createFakeBankAccount(5).then((contas) => {
 ```json
 [
   {
-    "account_number": "123456",
-    "verification_digit": "7",
-    "agency": "1234",
-    "bank": "Banco do Brasil"
-  },
-  {
-    "account_number": "654321",
-    "verification_digit": "9",
-    "agency": "5678",
+    "account_number": "09988239",
+    "verification_digit": "3",
+    "agency": "1091",
     "bank": "Santander"
   },
   {
-    "account_number": "987654",
-    "verification_digit": "2",
-    "agency": "9012",
-    "bank": "Bradesco"
+    "account_number": "84156",
+    "verification_digit": "1",
+    "agency": "3010",
+    "bank": "Itaú"
   }
 ]
 ```
