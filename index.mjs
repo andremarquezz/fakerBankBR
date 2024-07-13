@@ -1,10 +1,10 @@
 'use strict';
-const https = require('https');
-const querystring = require('querystring');
-const cheerio = require('cheerio');
-const httpcodes = require('./codes.json');
+import cheerio from 'cheerio';
+import https from 'https';
+import querystring from 'querystring';
+import httpcodes from './codes.json' assert { type: 'json' };
 
-exports.createFakeBankAccount = (quantity = 1) => {
+export const createFakeBankAccount = (quantity = 1) => {
   return new Promise((resolve, reject) => {
     if (quantity > 10) {
       quantity = 10;
