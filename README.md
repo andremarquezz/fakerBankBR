@@ -21,18 +21,18 @@ npm install --save-dev fakerbankbr
 const { createFakeBankAccount } = require('fakerbankbr');
 
 // Gerar uma única conta bancária
-
-(async () => {
+// Retorna uma Promise, portanto deve estar dentro de uma função assíncrona
+async () => {
   const conta = await createFakeBankAccount();
-  // Uso
-})();
+  // Utilização
+};
 
 // Gerar múltiplas contas bancárias (de 1 a 10)
-
-(async () => {
+// Retorna uma Promise, portanto deve estar dentro de uma função assíncrona
+async () => {
   const contas = await createFakeBankAccount(5);
-  // Uso
-})();
+  // Utilização
+};
 ```
 
 ### Exemplo de Resposta
