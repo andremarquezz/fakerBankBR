@@ -2,7 +2,7 @@
 import cheerio from 'cheerio';
 import https from 'https';
 import querystring from 'querystring';
-import httpcodes from './codes.json' assert { type: 'json' };
+import httpcodes from './httpcodes.js';
 
 export const createFakeBankAccount = (quantity = 1) => {
   return new Promise((resolve, reject) => {
