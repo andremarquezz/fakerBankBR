@@ -17,6 +17,8 @@ npm install --save-dev fakerbankbr
 
 ## 🪄Uso
 
+### Async/Await
+
 ```javascript
 const { createFakeBankAccount } = require('fakerbankbr');
 
@@ -33,6 +35,22 @@ async () => {
   const contas = await createFakeBankAccount(5);
   // Utilização
 };
+```
+
+### Then
+
+```javascript
+const { createFakeBankAccount } = require('fakerbankbr');
+
+// Gerar uma única conta bancária
+createFakeBankAccount().then((conta) => {
+  // Utilização
+});
+
+// Gerar múltiplas contas bancárias (de 1 a 10)
+createFakeBankAccount(5).then((contas) => {
+  // Utilização
+});
 ```
 
 ### Exemplo de Resposta
@@ -74,11 +92,3 @@ async () => {
 - `quantity`: (Opcional) Número de contas bancárias a serem geradas. O padrão é **1 e o máximo é 10**.
 
 Retorna uma promise que resolve com um objeto de conta bancária ou um array de objetos de conta bancária, dependendo do parâmetro `quantity`.
-
-## Créditos
-
-- Esta biblioteca utiliza o site do 4Devs para gerar informações falsas de contas bancárias brasileiras.
-
-## Licença
-
-Este projeto é licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para mais detalhes.
