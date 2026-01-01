@@ -1,94 +1,80 @@
-<div align="center">
-  <img src="https://images.squarespace-cdn.com/content/v1/603a992bcf34a07d765e1085/1f51c872-40a9-4dfe-8d3e-c8868e05f2d7/16247556_9729.jpg" width="200"/>
-  <h1>FakerBankBR</h1>
-  <p>FakerBankBR é uma biblioteca que permite a geração de dados falsos, porém realistas, de contas bancárias brasileiras. É ideal para testes e desenvolvimento de aplicações que requerem dados bancários fictícios.</p>
-  
-[![npm version](https://badgen.net/npm/v/fakerbankbr)](https://www.npmjs.com/package/fakerbankbr)
+# FakerBankBR
 
-</div>
+FakerBankBR e uma biblioteca para gerar dados falsos de contas bancarias brasileiras sem depender de servicos externos.
+Ela gera banco, agencia e conta com digitos verificadores usando algoritmos locais.
 
-## 📦Instalação
+Todas as funcoes sao sincronas.
 
-Para usar o FakerBankBR, você pode instalá-lo via npm:
+## Instalacao
 
 ```bash
-npm install --save-dev fakerbankbr
+npm install fakerbankbr
 ```
 
-## 🪄Uso
-
-### Async/Await
+## Uso
 
 ```javascript
-const { createFakeBankAccount } = require('fakerbankbr');
+const {
+  criarContaBancaria,
+  criarContasBancarias,
+  listarBancos,
+} = require('fakerbankbr');
 
-// Gerar uma única conta bancária
-// Retorna uma Promise, portanto deve estar dentro de uma função assíncrona
-async () => {
-  const conta = await createFakeBankAccount();
-  // Utilização
-};
+const conta = criarContaBancaria();
+const contas = criarContasBancarias(3, { semente: 123 });
+const contaBanco = criarContaBancaria({ codigoBanco: '001' });
 
-// Gerar múltiplas contas bancárias (de 1 a 10)
-// Retorna uma Promise, portanto deve estar dentro de uma função assíncrona
-async () => {
-  const contas = await createFakeBankAccount(5);
-  // Utilização
-};
+console.log(conta);
+console.log(contas.length);
+console.log(listarBancos());
 ```
 
-### Then
-
-```javascript
-const { createFakeBankAccount } = require('fakerbankbr');
-
-// Gerar uma única conta bancária
-createFakeBankAccount().then((conta) => {
-  // Utilização
-});
-
-// Gerar múltiplas contas bancárias (de 1 a 10)
-createFakeBankAccount(5).then((contas) => {
-  // Utilização
-});
-```
-
-### Exemplo de Resposta
-
-#### Quando é gerada uma única conta:
+### Exemplo de resposta
 
 ```json
 {
-  "account_number": "252258",
-  "verification_digit": "6",
-  "agency": "4282",
-  "bank": "Banco do Brasil"
-}
-```
-
-#### Quando são geradas múltiplas contas:
-
-```json
-[
-  {
-    "account_number": "09988239",
-    "verification_digit": "3",
-    "agency": "1091",
-    "bank": "Santander"
+  "banco": {
+    "codigo": "001",
+    "nome": "Banco do Brasil"
   },
-  {
-    "account_number": "84156",
-    "verification_digit": "1",
-    "agency": "3010",
-    "bank": "Itaú"
+  "agencia": {
+    "numero": "1234",
+    "digito": "5",
+    "completo": "1234-5"
+  },
+  "conta": {
+    "numero": "12345678",
+    "digito": "9",
+    "completo": "12345678-9"
   }
-]
+}
 ```
 
 ## API
 
-### `createFakeBankAccount(quantity)`
+### criarContaBancaria(opcoes)
 
-- `quantity`: (Opcional) Número de contas bancárias a serem geradas. O padrão é **1 e o máximo é 10**.
+Gera uma conta bancaria.
 
-Retorna uma promise que resolve com um objeto de conta bancária ou um array de objetos de conta bancária, dependendo do parâmetro `quantity`.
+Opcoes:
+- codigoBanco: codigo do banco (ex: "001")
+- nomeBanco: nome do banco (ex: "Itau")
+- semente: numero ou string para resultados deterministas
+- tamanhoAgencia: tamanho da agencia
+- tamanhoConta: tamanho da conta
+- incluirDigitoAgencia: boolean (default true)
+- incluirDigitoConta: boolean (default true)
+- permitirZeroEsquerda: boolean (default false)
+
+### criarContasBancarias(quantidade, opcoes)
+
+Gera varias contas bancarias. quantidade deve ser um numero positivo.
+
+### listarBancos()
+
+Retorna a lista de bancos disponiveis com metadados de geracao.
+
+## Ajuste de regras por banco
+
+As regras de tamanho e algoritmos ficam em `lib/bancos.js`. Voce pode ajustar os pesos,
+substituicoes e algoritmos (mod10/mod11) para aumentar a fidelidade por instituicao.

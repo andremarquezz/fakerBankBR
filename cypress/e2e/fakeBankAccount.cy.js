@@ -1,99 +1,35 @@
-const { createFakeBankAccount } = require('../../index');
+const {
+  criarContaBancaria,
+  criarContasBancarias,
+} = require('../../index');
 
-describe('createFakeBankAccount', () => {
-  it('should create a single fake bank account', () => {
-    cy.intercept('POST', 'https://www.4devs.com.br/ferramentas_online.php', {
-      statusCode: 200,
-      body: {
-        account_number: '12345',
-        verification_digit: '6',
-        agency: '7890',
-        bank: 'Fake Bank',
-      },
-    }).as('fakeBankAccount');
+describe('criarContaBancaria', () => {
+  it('gera uma conta bancaria', () => {
+    const conta = criarContaBancaria({ semente: 123, codigoBanco: '001' });
 
-    createFakeBankAccount().then((account) => {
-      console.log('Conta Gerada:', account);
-      expect(account).to.be.an('object');
-      expect(account).to.have.property('account_number');
-      expect(account).to.have.property('verification_digit');
-      expect(account).to.have.property('agency');
-      expect(account).to.have.property('bank');
+    expect(conta).to.be.an('object');
+    expect(conta).to.have.property('banco');
+    expect(conta).to.have.property('agencia');
+    expect(conta).to.have.property('conta');
+  });
+
+  it('gera varias contas bancarias quando quantidade > 1', () => {
+    const quantidade = 3;
+    const contas = criarContasBancarias(quantidade, { semente: 456 });
+
+    expect(contas).to.be.an('array').to.have.lengthOf(quantidade);
+    contas.forEach((conta) => {
+      expect(conta).to.be.an('object');
+      expect(conta).to.have.property('banco');
+      expect(conta).to.have.property('agencia');
+      expect(conta).to.have.property('conta');
     });
   });
 
-  it('should create multiple fake bank accounts when quantity > 1', () => {
-    const quantity = 3;
-    cy.intercept(
-      'POST',
-      'https://www.4devs.com.br/ferramentas_online.php',
-      (req) => {
-        req.reply({
-          statusCode: 200,
-          body: Array(quantity).fill({
-            account_number: '12345',
-            verification_digit: '6',
-            agency: '7890',
-            bank: 'Fake Bank',
-          }),
-        });
-      }
-    ).as('fakeBankAccounts');
+  it('gera contas deterministicas com a mesma semente', () => {
+    const a = criarContaBancaria({ semente: 'abc', codigoBanco: '001' });
+    const b = criarContaBancaria({ semente: 'abc', codigoBanco: '001' });
 
-    createFakeBankAccount(quantity).then((accounts) => {
-      expect(accounts).to.be.an('array').to.have.lengthOf(quantity);
-      accounts.forEach((account) => {
-        expect(account).to.be.an('object');
-        expect(account).to.have.property('account_number');
-        expect(account).to.have.property('verification_digit');
-        expect(account).to.have.property('agency');
-        expect(account).to.have.property('bank');
-      });
-    });
-  });
-
-  it('should limit the number of fake bank accounts created', () => {
-    const quantity = 15;
-    cy.intercept(
-      'POST',
-      'https://www.4devs.com.br/ferramentas_online.php',
-      (req) => {
-        req.reply({
-          statusCode: 200,
-          body: Array(10).fill({
-            account_number: '12345',
-            verification_digit: '6',
-            agency: '7890',
-            bank: 'Fake Bank',
-          }),
-        });
-      }
-    ).as('fakeBankAccounts');
-
-    createFakeBankAccount(quantity).then((accounts) => {
-      expect(accounts).to.be.an('array').to.have.lengthOf(10); // Limited to 10 accounts
-    });
-  });
-
-  it('should handle server errors', () => {
-    cy.intercept('POST', 'https://www.4devs.com.br/ferramentas_online.php', {
-      statusCode: 500,
-      body: 'Internal Server Error',
-    }).as('fakeBankAccountsError');
-
-    createFakeBankAccount().catch((error) => {
-      expect(error).to.exist;
-    });
-  });
-
-  it('should handle unexpected server responses', () => {
-    cy.intercept('POST', 'https://www.4devs.com.br/ferramentas_online.php', {
-      statusCode: 200,
-      body: 'Invalid response format',
-    }).as('fakeBankAccountsUnexpected');
-
-    createFakeBankAccount().catch((error) => {
-      expect(error).to.exist;
-    });
+    expect(a).to.deep.equal(b);
   });
 });
