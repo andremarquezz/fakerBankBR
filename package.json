@@ -35,5 +35,11 @@
   "bugs": {
     "url": "https://github.com/andremarquezz/fakerBankBR/issues"
   },
-  "homepage": "https://github.com/andremarquezz/fakerBankBR#readme"
+  "homepage": "https://github.com/andremarquezz/fakerBankBR#readme",
+  "devDependencies": {
+    "cypress": "^15.8.1"
+  },
+  "overrides": {
+    "qs": "^6.14.1"
+  }
 }
